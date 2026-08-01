@@ -64,6 +64,7 @@ api.onEvent('theme-changed', ({ theme }) => document.body.dataset.theme = theme)
 | `@morbidcorp/element-sdk/integrity` | Canonical JSON, hashing, sign payload, ed25519 sign/verify |
 | `@morbidcorp/element-sdk/csp` | `generateElementCsp` |
 | `@morbidcorp/element-sdk/emulator` | `EmulatorCore` (environment-agnostic) + `attachIframeHost` |
+| `@morbidcorp/element-sdk/scanner` | Static bundle scanner (`scanBundle`) — environment-agnostic, no Node APIs |
 
 ## Docs
 

@@ -1,6 +1,6 @@
 {
   "name": "@morbidcorp/element-sdk",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "SDK for building HEIR Desk Elements: bridge client, manifest validator, CSP generation, integrity/signing helpers, and a dev emulator.",
   "license": "UNLICENSED",
   "private": false,
@@ -43,6 +43,10 @@
     "./emulator": {
       "types": "./dist/emulator.d.ts",
       "default": "./dist/emulator.js"
+    },
+    "./scanner": {
+      "types": "./dist/scanner.d.ts",
+      "default": "./dist/scanner.js"
     },
     "./package.json": "./package.json"
   },

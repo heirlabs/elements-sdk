@@ -1,4 +1,4 @@
-# @morbidcorp/element-sdk — SPEC v0.1.0 (binding)
+# @morbidcorp/element-sdk — SPEC v0.2.0 (binding)
 
 Contract source: HEIR Desk Elements v3 Marketplace Plan (2026-08-01), §3.2 (bridge + capability
 list), §3.3 (manifest), §3.5/3.6 (integrity/signing), amendments A5–A14, Appendix B #13.
@@ -9,7 +9,7 @@ described publicly as an existing HEIR feature. Repo stays private until the ope
 
 ## Package
 
-- name: `@morbidcorp/element-sdk`, version `0.1.0`, `"license": "UNLICENSED"` (+ LICENSE file:
+- name: `@morbidcorp/element-sdk`, version `0.2.0`, `"license": "UNLICENSED"` (+ LICENSE file:
   proprietary, © Heir Labs, all rights reserved), `"private": false` (installable via git dep),
   `type: module`, engines node >= 18.
 - Runtime deps: `zod` (^3.23), `@noble/hashes` (sha256, isomorphic sync), `@noble/curves`
@@ -25,6 +25,8 @@ described publicly as an existing HEIR feature. Repo stays private until the ope
   - `./integrity` → canonical JSON, hashing, sign payload, ed25519 sign/verify helpers
   - `./csp` → `generateElementCsp`
   - `./emulator` → `EmulatorCore` (environment-agnostic) + `attachIframeHost` browser helper
+  - `./scanner` → static bundle scanner (`scanBundle`, `checkBundleSize`, `declaredOrigins`,
+    `MAX_BUNDLE_BYTES`, `Finding`) — environment-agnostic, no Node APIs
 
 ## Protocol — `heir-element-api@1`
 
@@ -176,6 +178,43 @@ Snapshot-tested for: zero-endpoint manifest, multi-endpoint manifest, frameAnces
   fixed manifest fixture → assert exact manifestHash, payload string, and signature base64.
   Determinism: signing twice yields identical bytes (ed25519 is deterministic).
 
+## Static scanner (`./scanner`) — added in 0.2.0
+
+Environment-agnostic port of the CLI's review-assist bundle scanner (moved here so the CLI and
+the registry run the exact same scan — single source of truth, no forked validation). No Node
+APIs (no fs/path); pure functions, browser-safe. Review-assist only: the CSP is the actual
+boundary.
+
+```ts
+scanBundle({ files, manifest, gzSizeBytes? }) → { ok: boolean, errors: Finding[], warnings: Finding[] }
+// files: Record<bundle-relative path, string | Uint8Array>  (Uint8Array decoded as UTF-8)
+// manifest: parsed manifest object (entry + endpoints[].origin consulted)
+// gzSizeBytes: compressed bundle size; when given, the 5 MB cap is enforced (E_BUNDLE_SIZE)
+// Finding = { severity: 'error' | 'warning', code, message, file, line }
+// ok === (errors.length === 0)
+```
+
+Scanned files: `*.js|mjs|cjs` and `*.htm(l)` (HTML additionally gets the remote-script and
+hidden-iframe checks). Checks, verbatim from the CLI scanner:
+
+| Code | Severity | Trigger |
+|---|---|---|
+| `E_EVAL` | error | `eval(`, `new Function`, string-argument `setTimeout`/`setInterval` |
+| `E_OPAQUE_STORAGE` | error | `localStorage`, `sessionStorage`, `indexedDB`, `caches.`/`caches[`, `document.cookie` |
+| `E_SERVICE_WORKER` | error | `navigator.serviceWorker` |
+| `E_REMOTE_CODE` | error | `import`/`from`/`import(` of a `//`-URL; remote `<script src>` in HTML |
+| `E_UNDECLARED_URL` | error | http(s)/ws(s) URL whose origin is not in `manifest.endpoints`. DOCUMENTED SPEC DEVIATION: a wss URL whose host matches a declared https origin is accepted (CSP/Fetch ws→https scheme normalization); wss to an undeclared host still errors |
+| `E_HIDDEN_IFRAME` | error | iframe with `srcdoc`, `display:none`, `visibility:hidden`, or zero width/height |
+| `E_ENTRY_MISSING` | error | `manifest.entry` not present in `files` |
+| `E_BUNDLE_SIZE` | error | `gzSizeBytes` > 5 MB cap (also exported standalone as `checkBundleSize`) |
+| `W_FRAME_ESCAPE` | warning | `window.top` / `window.parent` |
+| `W_TIGHT_LOOP` | warning | numeric-literal `setInterval` < 250 ms; ≥ 2 `requestAnimationFrame` call sites; or a lone rAF that re-schedules inside the body of the function it passes (literal/comment-stripped, brace-matched) |
+| `W_HIGH_ENTROPY` | warning | unbroken `[A-Za-z0-9+/=_-]` run > 40 chars outside any URL with Shannon entropy > 4.5; pure-hex runs (must mix digits and a–f) use a 3.2 threshold since hex caps at 4 bits/char |
+| `W_BASE64_BLOB` | warning | contiguous base64 run > 100 KB |
+
+Also exported: `MAX_BUNDLE_BYTES` (5 MB), `declaredOrigins(manifest)` (defensive
+`endpoints[].origin` extraction), `Finding`, `ScanBundleInput`, `ScanBundleResult`.
+
 ## EmulatorCore (dev harness)
 
 Environment-agnostic class so logic is testable in Node and reusable by the CLI dev server
@@ -225,7 +264,11 @@ Node beyond construction (CLI e2e covers it in a real browser-less smoke via ser
    permission absent; quota; rate limit; log entries emitted; result-shape stripping.
 4. Integrity: canonical JSON vectors (key order, unicode, nested); manifestHash KAT;
    sign/verify round-trip; signature KAT; tamper detection (flip byte → verify false).
-5. CSP snapshots. 6. JSON-Schema drift test.
+5. CSP snapshots. 6. JSON-Schema drift test. 7. Scanner: every error/warning fixture from the
+   CLI scanner suite (eval family, opaque storage, remote code, undeclared URLs incl. the
+   wss→https equivalence, hidden iframes, entry-missing, size cap, entropy incl. the hex
+   branch, rAF loop heuristics, frame escape, base64 blobs, clean fixture) plus the
+   environment-agnostic contract (Uint8Array decoding, file filtering, ok flag).
 
 ## Repo hygiene / CI / git
 

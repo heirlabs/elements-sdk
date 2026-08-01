@@ -7,6 +7,7 @@
  * - `@morbidcorp/element-sdk/integrity` — canonical JSON, hashing, signing
  * - `@morbidcorp/element-sdk/csp`       — generateElementCsp
  * - `@morbidcorp/element-sdk/emulator`  — EmulatorCore + attachIframeHost
+ * - `@morbidcorp/element-sdk/scanner`   — static bundle scanner (scanBundle)
  */
 export * from './constants.js';
 export {
