@@ -126,8 +126,9 @@ Rules beyond zod:
 
 - **A7 phishing surface** (`audience: 'third-party'` only): `category` `estate`/`identity` →
   `E_CATEGORY_CLOSED`. Name/description semantic denylist, word-boundary matched after
-  NFKC normalization + confusable folding (ship a confusables map covering common
-  Cyrillic/Greek/fullwidth Latin lookalikes) + diacritic strip + lowercase:
+  NFKC normalization + Unicode format-character strip (`\p{Cf}`: ZWSP/ZWNJ/soft hyphen —
+  closes invisible-character evasion) + confusable folding (ship a confusables map covering
+  common Cyrillic/Greek/fullwidth Latin lookalikes) + diacritic strip + lowercase:
   `heir` (substring match, brand), and the terms `estate, inheritance, inherit, probate, will,
   trust, executor, death, deceased, wallet, seed phrase, recovery phrase, recovery, beneficiary,
   proof of life, legal advice`. Word-boundary so `willow`/`trustworthy…` — no: `trust` and
