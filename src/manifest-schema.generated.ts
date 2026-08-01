@@ -1,0 +1,377 @@
+// GENERATED FILE - do not edit by hand. Run `npm run gen:schema` to regenerate.
+export const manifestJsonSchema: Record<string, unknown> = {
+  "$ref": "#/definitions/HeirElementManifestV1",
+  "definitions": {
+    "HeirElementManifestV1": {
+      "type": "object",
+      "properties": {
+        "manifestVersion": {
+          "type": "number",
+          "const": 1
+        },
+        "id": {
+          "type": "string",
+          "maxLength": 80,
+          "pattern": "^[a-z0-9]+(\\.[a-z0-9][a-z0-9-]*)+$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "publisher": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "displayName": {
+              "type": "string",
+              "minLength": 1
+            },
+            "tier": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 3
+            }
+          },
+          "required": [
+            "id",
+            "displayName",
+            "tier"
+          ],
+          "additionalProperties": false
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "utilities",
+            "games",
+            "devtools",
+            "estate",
+            "identity"
+          ]
+        },
+        "icons": {
+          "type": "object",
+          "additionalProperties": {}
+        },
+        "surfaces": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1,
+          "items": [
+            {
+              "type": "string",
+              "const": "window"
+            }
+          ]
+        },
+        "window": {
+          "type": "object",
+          "properties": {
+            "defaultSize": {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 2,
+              "items": [
+                {
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 4096
+                },
+                {
+                  "$ref": "#/definitions/HeirElementManifestV1/properties/window/properties/defaultSize/items/0"
+                }
+              ]
+            },
+            "minSize": {
+              "$ref": "#/definitions/HeirElementManifestV1/properties/window/properties/defaultSize"
+            },
+            "resizable": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "defaultSize",
+            "minSize",
+            "resizable"
+          ],
+          "additionalProperties": false
+        },
+        "runtime": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "sandboxed-iframe"
+            },
+            "api": {
+              "type": "string",
+              "const": "heir-element-api@1"
+            }
+          },
+          "required": [
+            "type",
+            "api"
+          ],
+          "additionalProperties": false
+        },
+        "entry": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "permissions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "endpoints": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "origin": {
+                "type": "string"
+              },
+              "purpose": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "dataSent": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "dataReceived": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "origin",
+              "purpose",
+              "dataSent",
+              "dataReceived"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "dataUse": {
+          "type": "object",
+          "properties": {
+            "collectsPersonalData": {
+              "type": "boolean"
+            },
+            "sells": {
+              "type": "boolean"
+            },
+            "retention": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "privacyPolicy": {
+              "type": "string",
+              "format": "uri"
+            }
+          },
+          "required": [
+            "collectsPersonalData",
+            "sells",
+            "retention"
+          ],
+          "additionalProperties": false
+        },
+        "pricing": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "model": {
+                  "type": "string",
+                  "const": "free"
+                }
+              },
+              "required": [
+                "model"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "model": {
+                  "type": "string",
+                  "const": "one_time"
+                },
+                "priceCents": {
+                  "type": "integer",
+                  "minimum": 200
+                }
+              },
+              "required": [
+                "model",
+                "priceCents"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "model": {
+                  "type": "string",
+                  "const": "metered"
+                },
+                "actions": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "action": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "postedCreditPrice": {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      "maxTokensPerAction": {
+                        "type": "integer",
+                        "exclusiveMinimum": 0
+                      }
+                    },
+                    "required": [
+                      "action",
+                      "postedCreditPrice",
+                      "maxTokensPerAction"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "minItems": 1
+                }
+              },
+              "required": [
+                "model",
+                "actions"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "compat": {
+          "type": "object",
+          "properties": {
+            "minDeskVersion": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "minDeskVersion"
+          ],
+          "additionalProperties": false
+        },
+        "ageRating": {
+          "type": "string",
+          "enum": [
+            "adult",
+            "everyone"
+          ]
+        },
+        "support": {
+          "type": "object",
+          "properties": {
+            "email": {
+              "type": "string",
+              "format": "email"
+            },
+            "url": {
+              "type": "string",
+              "format": "uri"
+            }
+          },
+          "required": [
+            "email"
+          ],
+          "additionalProperties": false
+        },
+        "integrity": {
+          "type": "object",
+          "properties": {
+            "bundleHash": {
+              "type": "string",
+              "pattern": "^sha256-[0-9a-f]{64}$"
+            },
+            "sizeBytes": {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            },
+            "publisherSig": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^ed25519:[A-Za-z0-9+/]+={0,2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "registrySig": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "bundleHash",
+            "sizeBytes",
+            "publisherSig",
+            "registrySig"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "manifestVersion",
+        "id",
+        "name",
+        "version",
+        "description",
+        "publisher",
+        "category",
+        "surfaces",
+        "window",
+        "runtime",
+        "entry",
+        "permissions",
+        "endpoints",
+        "dataUse",
+        "pricing",
+        "compat",
+        "ageRating",
+        "support"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+};

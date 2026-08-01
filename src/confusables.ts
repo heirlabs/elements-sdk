@@ -1,0 +1,98 @@
+/**
+ * Confusable-character folding map used by the A7 phishing-surface denylist.
+ *
+ * Covers the common Cyrillic, Greek and miscellaneous Latin-lookalike code
+ * points seen in homoglyph attacks. Fullwidth Latin (U+FF21..) is handled by
+ * NFKC normalization before this map is applied, so it is not repeated here.
+ *
+ * This is intentionally a pragmatic map, not a full UTS #39 implementation:
+ * the registry runs the authoritative check; this catches the common cases at
+ * authoring/validation time.
+ */
+export const CONFUSABLES: Readonly<Record<string, string>> = {
+  // Cyrillic uppercase
+  А: 'A',
+  В: 'B',
+  Е: 'E',
+  Ё: 'E',
+  З: '3',
+  И: 'N',
+  К: 'K',
+  М: 'M',
+  Н: 'H',
+  О: 'O',
+  Р: 'P',
+  С: 'C',
+  Т: 'T',
+  У: 'Y',
+  Х: 'X',
+  Ь: 'b',
+  Ѕ: 'S',
+  І: 'I',
+  Ї: 'I',
+  Ј: 'J',
+  Ԛ: 'Q',
+  Ԝ: 'W',
+  // Cyrillic lowercase
+  а: 'a',
+  в: 'b',
+  е: 'e',
+  ё: 'e',
+  и: 'n',
+  к: 'k',
+  м: 'm',
+  н: 'h',
+  о: 'o',
+  р: 'p',
+  с: 'c',
+  т: 't',
+  у: 'y',
+  х: 'x',
+  ѕ: 's',
+  і: 'i',
+  ї: 'i',
+  ј: 'j',
+  ԛ: 'q',
+  ԝ: 'w',
+  ԁ: 'd',
+  һ: 'h',
+  ѵ: 'v',
+  // Greek uppercase
+  Α: 'A',
+  Β: 'B',
+  Ε: 'E',
+  Ζ: 'Z',
+  Η: 'H',
+  Ι: 'I',
+  Κ: 'K',
+  Μ: 'M',
+  Ν: 'N',
+  Ο: 'O',
+  Ρ: 'P',
+  Τ: 'T',
+  Υ: 'Y',
+  Χ: 'X',
+  // Greek lowercase
+  α: 'a',
+  β: 'b',
+  γ: 'y',
+  ε: 'e',
+  η: 'n',
+  ι: 'i',
+  κ: 'k',
+  ν: 'v',
+  ο: 'o',
+  ρ: 'p',
+  τ: 't',
+  υ: 'u',
+  χ: 'x',
+  ω: 'w',
+  // Misc Latin lookalikes
+  ɑ: 'a',
+  ɡ: 'g',
+  ɩ: 'i',
+  ʟ: 'l',
+  ℯ: 'e',
+  ℹ: 'i',
+  ｌ: 'l',
+};
