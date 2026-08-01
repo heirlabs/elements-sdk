@@ -16,7 +16,9 @@ export const SIGN_DOMAIN = 'heir-element-registry-v1';
  * Deterministic JSON serialization: recursively key-sorted objects, arrays in
  * order, no whitespace, UTF-8. Non-finite numbers are rejected; `undefined`
  * object values are skipped (as in JSON.stringify); `undefined` array items
- * serialize as null (as in JSON.stringify).
+ * serialize as null (as in JSON.stringify). Non-plain objects (Date, Map,
+ * class instances, …) are rejected rather than silently serialized as `{}` —
+ * a hash over silently-dropped data would look valid while binding nothing.
  */
 export function canonicalJson(value: unknown): string {
   if (value === null) return 'null';
@@ -33,6 +35,10 @@ export function canonicalJson(value: unknown): string {
     case 'object': {
       if (Array.isArray(value)) {
         return '[' + value.map((item) => (item === undefined ? 'null' : canonicalJson(item))).join(',') + ']';
+      }
+      const proto: unknown = Object.getPrototypeOf(value);
+      if (proto !== Object.prototype && proto !== null) {
+        throw new TypeError('canonicalJson: only plain objects and arrays can be serialized');
       }
       const record = value as Record<string, unknown>;
       const keys = Object.keys(record)

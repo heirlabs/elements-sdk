@@ -306,11 +306,14 @@ const DENYLIST_TERMS = [
 ] as const;
 
 /**
- * Fold text for denylist matching: NFKC normalization, confusable folding,
- * diacritic stripping, lowercase.
+ * Fold text for denylist matching: NFKC normalization, invisible
+ * format-character (Unicode Cf: ZWSP, ZWNJ, soft hyphen, \u2026) stripping,
+ * confusable folding, diacritic stripping, lowercase. Cf stripping closes the
+ * `He<U+200B>ir` evasion: invisible characters inside a denylisted term would
+ * otherwise break the match on the exact surface A7 targets.
  */
 export function foldText(raw: string): string {
-  const nfkc = raw.normalize('NFKC');
+  const nfkc = raw.normalize('NFKC').replace(/\p{Cf}/gu, '');
   let folded = '';
   for (const ch of nfkc) {
     folded += CONFUSABLES[ch] ?? ch;

@@ -194,12 +194,12 @@ export class EmulatorCore {
     };
 
     const envelope = rpcRequestSchema.safeParse(req);
-    if (!envelope.success) {
-      return finish(fallbackMethod, errResponse(fallbackRpcId, 'E_INVALID_PARAMS', 'malformed request envelope'));
-    }
-    const { rpcId, method, params } = envelope.data;
+    const rpcId = envelope.success ? envelope.data.rpcId : fallbackRpcId;
+    const method = envelope.success ? envelope.data.method : fallbackMethod;
 
-    // Rate limit (sliding window).
+    // Rate limit (sliding window) — accounted BEFORE envelope validation so
+    // malformed-envelope spam still consumes the budget and gets answered
+    // E_RATE_LIMITED instead of an unmetered E_INVALID_PARAMS stream.
     const windowStart = started - this.rateLimit.perMs;
     while (this.callTimestamps.length > 0 && (this.callTimestamps[0] as number) < windowStart) {
       this.callTimestamps.shift();
@@ -211,6 +211,11 @@ export class EmulatorCore {
       );
     }
     this.callTimestamps.push(started);
+
+    if (!envelope.success) {
+      return finish(method, errResponse(rpcId, 'E_INVALID_PARAMS', 'malformed request envelope'));
+    }
+    const { params } = envelope.data;
 
     // Deny-by-default dispatch.
     if (!isKnownMethod(method)) {

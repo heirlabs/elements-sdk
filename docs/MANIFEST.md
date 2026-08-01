@@ -51,7 +51,7 @@ Checked against a personal-data denylist (names, emails, addresses, phone, locat
 ## A7 phishing surface (third-party audience only)
 
 - `category: estate` or `identity` → `E_CATEGORY_CLOSED`.
-- `name` and `description` are folded (NFKC normalization → confusable folding for common Cyrillic/Greek/fullwidth lookalikes → diacritic strip → lowercase) and checked against:
+- `name` and `description` are folded (NFKC normalization → invisible format-character strip (Unicode Cf: zero-width space/joiner/non-joiner, soft hyphen, …) → confusable folding for common Cyrillic/Greek/fullwidth lookalikes → diacritic strip → lowercase) and checked against:
   - `heir` — substring match (brand);
   - word-boundary terms: `estate, inheritance, inherit, probate, will, trust, executor, death, deceased, wallet, seed phrase, recovery phrase, recovery, beneficiary, proof of life, legal advice`.
 - Word-boundary matching means "Willow Notes" and "Trustworthy Notes" pass while "Will Checklist" fails.

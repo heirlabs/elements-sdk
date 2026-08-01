@@ -121,6 +121,41 @@ describe('connectElement', () => {
     await expect(api.storage.get('k')).rejects.toMatchObject({ code: 'E_INVALID_PARAMS' });
   });
 
+  it('folds wire error codes outside the closed enum to E_INTERNAL', async () => {
+    const channel = new MessageChannel();
+    openChannels.push(channel);
+    channel.port1.addEventListener('message', (ev) => {
+      const data = (ev as MessageEvent).data as { type?: string; rpcId?: string };
+      if (data?.type === 'heir-element-ready') return;
+      channel.port1.postMessage({ v: 1, rpcId: data.rpcId, ok: false, error: { code: 'E_MADE_UP', message: 'nope' } });
+    });
+    channel.port1.start();
+    const win = createFakeWindow();
+    const apiPromise = connectElement({ windowRef: win });
+    win.dispatch({ data: { type: INIT_MESSAGE_TYPE, api: API_VERSION }, ports: [channel.port2] });
+    const api = await apiPromise;
+    await expect(api.storage.get('k')).rejects.toMatchObject({ code: 'E_INTERNAL', message: 'nope' });
+  });
+
+  it('ignores port messages without the v:1 envelope version', async () => {
+    const channel = new MessageChannel();
+    openChannels.push(channel);
+    channel.port1.addEventListener('message', (ev) => {
+      const data = (ev as MessageEvent).data as { type?: string; rpcId?: string };
+      if (data?.type === 'heir-element-ready') return;
+      // A v-less message with a bogus result would reject the call if processed;
+      // the real v:1 response then resolves it.
+      channel.port1.postMessage({ rpcId: data.rpcId, ok: true, result: { bogus: true } });
+      channel.port1.postMessage({ v: 1, rpcId: data.rpcId, ok: true, result: { value: 'real' } });
+    });
+    channel.port1.start();
+    const win = createFakeWindow();
+    const apiPromise = connectElement({ windowRef: win });
+    win.dispatch({ data: { type: INIT_MESSAGE_TYPE, api: API_VERSION }, ports: [channel.port2] });
+    const api = await apiPromise;
+    expect(await api.storage.get('k')).toBe('real');
+  });
+
   it('dispatches host events to subscribers with unsubscribe support', async () => {
     const core = new EmulatorCore(makeFullPermissionManifest());
     const channel = new MessageChannel();
@@ -161,7 +196,7 @@ describe('connectElement', () => {
 
   it('times out the handshake when no init arrives', async () => {
     const win = createFakeWindow();
-    await expect(connectElement({ windowRef: win, timeoutMs: 30 })).rejects.toMatchObject({ code: 'E_TIMEOUT' });
+    await expect(connectElement({ windowRef: win, timeoutMs: 30 })).rejects.toMatchObject({ code: 'E_UNAVAILABLE' });
     expect(win.listenerCount()).toBe(0);
   });
 

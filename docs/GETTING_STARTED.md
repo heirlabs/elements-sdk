@@ -9,8 +9,15 @@ This walkthrough takes you from nothing to a validated, packed, signed (dry-run)
 
 ## 1. Install the CLI (2 min)
 
+Both repos are private until launch, so your git HTTPS auth must have access to
+`heirlabs/elements-cli` and `heirlabs/elements-sdk`.
+
 ```sh
-npm install -g github:heirlabs/elements-cli
+git clone https://github.com/heirlabs/elements-cli.git
+cd elements-cli
+npm install
+npm install -g .
+cd ..
 ```
 
 Verify:
@@ -18,6 +25,12 @@ Verify:
 ```sh
 heir-element --version
 ```
+
+> Why not `npm install -g github:heirlabs/elements-cli`? The CLI depends on the
+> SDK as a second, nested git dependency, and npm prepares nested git
+> dependencies without installing their devDependencies — so the TypeScript
+> `prepare` build fails with `tsc: command not found`. The clone route above
+> installs devDependencies first and works everywhere.
 
 ## 2. Scaffold a new element (2 min)
 
@@ -33,7 +46,10 @@ my-timer/
   manifest.json      # element manifest (v1)
   index.html         # entry point
   src/main.js        # connects to the bridge
-  package.json
+  src/style.css
+  package.json       # scripts: dev / validate / pack
+  README.md
+  .gitignore         # node_modules, .heir, dist
 ```
 
 The scaffold already depends on `@heir/element-sdk` and calls `connectElement()` for you.
@@ -44,7 +60,7 @@ The scaffold already depends on `@heir/element-sdk` and calls `connectElement()`
 heir-element dev
 ```
 
-This serves your element in a sandboxed iframe with the same CSP production uses, an in-memory storage backend, a deterministic `llm.complete` stub, and a bridge log pane showing every call (`rpcId`, method, ok, ms). Open the printed URL in your browser.
+This serves your element in a sandboxed iframe with the same CSP production uses, a file-backed storage backend (`.heir/dev-storage.json` — persists across restarts; delete the file to simulate uninstall-deletes-data), and a deterministic `llm.complete` stub. Every bridge call is logged to the terminal as `[bridge] <method> ok|err <ms>ms`. Open the printed URL in your browser.
 
 ## 4. Edit your element (10 min)
 
@@ -69,7 +85,7 @@ api.onEvent('theme-changed', ({ theme }) => applyTheme(theme));
 const ok = await api.ui.confirm({ title: 'Reset?', message: 'Clear all local data?' });
 ```
 
-Save and the dev server reloads the frame. Watch the bridge log to see each call.
+Save and the dev server reloads the frame. Watch the terminal bridge log to see each call.
 
 Anything not in the capability table simply does not exist: no cookies, no fetch to undeclared origins (CSP blocks it), no parent-window access (cross-origin sandbox).
 
@@ -79,7 +95,12 @@ Anything not in the capability table simply does not exist: no cookies, no fetch
 heir-element validate
 ```
 
-Runs `validateManifest` from this SDK in `authoring` mode against `manifest.json` and prints errors and warnings with paths and codes. Fix anything red; see [MANIFEST.md](MANIFEST.md) for every code.
+Runs two local, synchronous stages:
+
+1. **Manifest** — `validateManifest` from this SDK in `authoring` mode against `manifest.json`.
+2. **Static scan** — builds the bundle and scans the output for code that cannot work in production: `eval`/`new Function`, opaque-origin APIs (`document.cookie`, `localStorage`, `sessionStorage`, `indexedDB`), remote scripts and imports, network URLs whose origin is not declared in `manifest.endpoints`, hidden iframes, and the 5 MB size cap — plus heuristics (tight loops, large inline blobs, `window.parent` access) that surface as warnings.
+
+Errors and warnings print with paths/file:line and codes; fix anything red — so a code-level error like `E_EVAL` here comes from stage 2, not your manifest. See [MANIFEST.md](MANIFEST.md) for every manifest code.
 
 ## 6. Pack the bundle (2 min)
 
@@ -87,7 +108,7 @@ Runs `validateManifest` from this SDK in `authoring` mode against `manifest.json
 heir-element pack
 ```
 
-Produces `dist/my-timer-1.0.0.tar.gz`, computes its `bundleHash` (`sha256-<hex>`) and `sizeBytes`, and writes them into the manifest's `integrity` block.
+Builds the bundle and produces a deterministic `.heir/publish/bundle.tar.gz`, computes its `bundleHash` (`sha256-<hex>`) and `sizeBytes`, and writes `.heir/publish/manifest.json` — a copy of your authored manifest with `integrity.bundleHash` and `integrity.sizeBytes` filled in (`publisherSig` stays `null` until publish). The authored `manifest.json` in your project root is left untouched.
 
 ## 7. Generate a publisher keypair (1 min)
 

@@ -207,6 +207,21 @@ describe('A7 phishing surface (third-party audience)', () => {
     });
   }
 
+  // Invisible Cf format characters inside a denylisted term must not evade
+  // the match (ZWSP, soft hyphen, ZWNJ).
+  const REJECT_INVISIBLE: Array<[string, string]> = [
+    ['ZWSP', 'He\u200Bir Tools'],
+    ['soft hyphen', 'He\u00ADir Tools'],
+    ['ZWNJ', 'Es\u200Ctate Vault'],
+  ];
+  for (const [label, name] of REJECT_INVISIBLE) {
+    it(`rejects invisible-character evasion (${label}) with E_NAME_HOMOGLYPH`, () => {
+      const r = thirdParty(makeManifest({ name }));
+      expect(r.ok).toBe(false);
+      expect(errorCodes(r)).toContain('E_NAME_HOMOGLYPH');
+    });
+  }
+
   for (const name of ACCEPT) {
     it(`accepts name '${name}'`, () => {
       const r = thirdParty(makeManifest({ name }));

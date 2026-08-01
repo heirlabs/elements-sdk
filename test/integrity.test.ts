@@ -84,6 +84,19 @@ describe('canonicalJson', () => {
     expect(() => canonicalJson(-Infinity)).toThrow(TypeError);
   });
 
+  it('rejects non-plain objects instead of silently serializing them as {}', () => {
+    expect(() => canonicalJson(new Date('2020-01-01'))).toThrow(TypeError);
+    expect(() => canonicalJson(new Map([['a', 1]]))).toThrow(TypeError);
+    class Widget {
+      constructor(readonly x = 1) {}
+    }
+    expect(() => canonicalJson({ a: new Widget() })).toThrow(TypeError);
+    // Null-prototype objects (e.g. from Object.create(null)) are plain enough.
+    const bare = Object.create(null) as Record<string, unknown>;
+    bare.a = 1;
+    expect(canonicalJson(bare)).toBe('{"a":1}');
+  });
+
   it('rejects unserializable types', () => {
     expect(() => canonicalJson({ a: () => 1 })).toThrow(TypeError);
     expect(() => canonicalJson(BigInt(1))).toThrow(TypeError);

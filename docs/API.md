@@ -13,9 +13,9 @@ const api = await connectElement({ timeoutMs: 5000 });
 
 Resolves after the handshake: the host posts `heir-element-init` with a dedicated `MessageChannel` port; the client replies `heir-element-ready` on that port. All RPC then flows on the port only — broadcast `message` events are never trusted after init. A second init is ignored. Calls made before init are queued and flushed after the handshake.
 
-Per-call timeout: 10 s (120 s for `llm.complete`). On timeout the call rejects with a local `ElementApiError` (`code: 'E_TIMEOUT'`) and its pending state is cleaned up — no dangling listeners.
+Per-call timeout: 10 s (120 s for `llm.complete`). On timeout the call rejects with a local `ElementApiError` (`code: 'E_UNAVAILABLE'`) and its pending state is cleaned up — no dangling listeners.
 
-Errors reject as `ElementApiError { code, message }`. Wire codes: `E_PERMISSION_DENIED`, `E_UNKNOWN_METHOD`, `E_INVALID_PARAMS`, `E_QUOTA_EXCEEDED`, `E_RATE_LIMITED`, `E_USER_DECLINED`, `E_UNAVAILABLE`, `E_INTERNAL`. Client-local codes: `E_TIMEOUT`, plus `E_INVALID_PARAMS` when a host response fails result-schema validation.
+Errors reject as `ElementApiError { code, message }` where `code` is always one of the closed enum: `E_PERMISSION_DENIED`, `E_UNKNOWN_METHOD`, `E_INVALID_PARAMS`, `E_QUOTA_EXCEEDED`, `E_RATE_LIMITED`, `E_USER_DECLINED`, `E_UNAVAILABLE`, `E_INTERNAL`. Client-local rejections reuse the same enum: `E_UNAVAILABLE` for timeouts (call or handshake) and missing/mismatched hosts, `E_INVALID_PARAMS` when a host response fails result-schema validation. A wire error code outside the enum is folded to `E_INTERNAL`.
 
 ## `api.getContext()`
 

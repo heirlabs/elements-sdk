@@ -9,9 +9,11 @@
 import {
   API_VERSION,
   DEFAULT_CALL_TIMEOUT_MS,
+  ERROR_CODES,
   INIT_MESSAGE_TYPE,
   LLM_CALL_TIMEOUT_MS,
   READY_MESSAGE_TYPE,
+  type ErrorCode,
 } from './constants.js';
 import {
   EVENT_TABLE,
@@ -27,7 +29,8 @@ import {
 
 export class ElementApiError extends Error {
   constructor(
-    readonly code: string,
+    /** Always one of the closed `ERROR_CODES` enum — wire and client-local alike. */
+    readonly code: ErrorCode,
     message: string,
   ) {
     super(message);
@@ -125,6 +128,7 @@ export function connectElement(opts: ConnectElementOptions = {}): Promise<Elemen
   function onPortMessage(data: unknown): void {
     if (typeof data !== 'object' || data === null) return;
     const msg = data as Record<string, unknown>;
+    if (msg.v !== 1) return; // wire envelopes are versioned; anything else is ignored
 
     if (typeof msg.event === 'string') {
       if (!isKnownEvent(msg.event)) return;
@@ -154,11 +158,12 @@ export function connectElement(opts: ConnectElementOptions = {}): Promise<Elemen
       }
     } else {
       const error = (msg.error ?? {}) as Record<string, unknown>;
+      // Only codes from the closed enum are propagated; anything else folds to E_INTERNAL.
+      const code = (ERROR_CODES as readonly string[]).includes(error.code as string)
+        ? (error.code as ErrorCode)
+        : 'E_INTERNAL';
       call.reject(
-        new ElementApiError(
-          typeof error.code === 'string' ? error.code : 'E_INTERNAL',
-          typeof error.message === 'string' ? error.message : 'rpc failed',
-        ),
+        new ElementApiError(code, typeof error.message === 'string' ? error.message : 'rpc failed'),
       );
     }
   }
@@ -170,7 +175,7 @@ export function connectElement(opts: ConnectElementOptions = {}): Promise<Elemen
         const timeoutMs = method === 'llm.complete' ? LLM_CALL_TIMEOUT_MS : DEFAULT_CALL_TIMEOUT_MS;
         const timer = setTimeout(() => {
           pending.delete(rpcId);
-          reject(new ElementApiError('E_TIMEOUT', `'${method}' timed out after ${timeoutMs} ms`));
+          reject(new ElementApiError('E_UNAVAILABLE', `'${method}' timed out after ${timeoutMs} ms`));
         }, timeoutMs);
         pending.set(rpcId, {
           method,
@@ -227,7 +232,7 @@ export function connectElement(opts: ConnectElementOptions = {}): Promise<Elemen
   return new Promise<ElementApi>((resolve, reject) => {
     const timer = setTimeout(() => {
       win.removeEventListener('message', onInit);
-      reject(new ElementApiError('E_TIMEOUT', `handshake timed out after ${handshakeTimeoutMs} ms`));
+      reject(new ElementApiError('E_UNAVAILABLE', `handshake timed out after ${handshakeTimeoutMs} ms`));
     }, handshakeTimeoutMs);
 
     const onInit = (ev: MessageEventLike): void => {

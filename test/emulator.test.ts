@@ -225,6 +225,16 @@ describe('EmulatorCore rate limiting', () => {
     expectOk(await core.handleRequest(req('element.getContext')));
     expectErr(await core.handleRequest(req('element.getContext')), 'E_RATE_LIMITED');
   });
+
+  it('malformed-envelope spam consumes the budget and gets E_RATE_LIMITED', async () => {
+    const core = makeCore({ rateLimit: { calls: 3, perMs: 60_000 } });
+    expectErr(await core.handleRequest('garbage'), 'E_INVALID_PARAMS');
+    expectErr(await core.handleRequest('garbage'), 'E_INVALID_PARAMS');
+    expectErr(await core.handleRequest('garbage'), 'E_INVALID_PARAMS');
+    expectErr(await core.handleRequest('garbage'), 'E_RATE_LIMITED');
+    // Well-formed requests share the same budget.
+    expectErr(await core.handleRequest(req('element.getContext')), 'E_RATE_LIMITED');
+  });
 });
 
 describe('EmulatorCore logging (INV-29 parity)', () => {
