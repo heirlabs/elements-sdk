@@ -1,5 +1,5 @@
 {
-  "name": "@heir/element-sdk",
+  "name": "@morbidcorp/element-sdk",
   "version": "0.1.0",
   "description": "SDK for building HEIR Desk Elements: bridge client, manifest validator, CSP generation, integrity/signing helpers, and a dev emulator.",
   "license": "UNLICENSED",

@@ -1,12 +1,12 @@
 /**
- * @heir/element-sdk — client, types, constants.
+ * @morbidcorp/element-sdk — client, types, constants.
  *
  * Subpath exports:
- * - `@heir/element-sdk/protocol`  — wire types + per-method zod schemas
- * - `@heir/element-sdk/manifest`  — manifest schema + validateManifest
- * - `@heir/element-sdk/integrity` — canonical JSON, hashing, signing
- * - `@heir/element-sdk/csp`       — generateElementCsp
- * - `@heir/element-sdk/emulator`  — EmulatorCore + attachIframeHost
+ * - `@morbidcorp/element-sdk/protocol`  — wire types + per-method zod schemas
+ * - `@morbidcorp/element-sdk/manifest`  — manifest schema + validateManifest
+ * - `@morbidcorp/element-sdk/integrity` — canonical JSON, hashing, signing
+ * - `@morbidcorp/element-sdk/csp`       — generateElementCsp
+ * - `@morbidcorp/element-sdk/emulator`  — EmulatorCore + attachIframeHost
  */
 export * from './constants.js';
 export {

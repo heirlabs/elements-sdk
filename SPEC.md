@@ -1,4 +1,4 @@
-# @heir/element-sdk — SPEC v0.1.0 (binding)
+# @morbidcorp/element-sdk — SPEC v0.1.0 (binding)
 
 Contract source: HEIR Desk Elements v3 Marketplace Plan (2026-08-01), §3.2 (bridge + capability
 list), §3.3 (manifest), §3.5/3.6 (integrity/signing), amendments A5–A14, Appendix B #13.
@@ -9,7 +9,7 @@ described publicly as an existing HEIR feature. Repo stays private until the ope
 
 ## Package
 
-- name: `@heir/element-sdk`, version `0.1.0`, `"license": "UNLICENSED"` (+ LICENSE file:
+- name: `@morbidcorp/element-sdk`, version `0.1.0`, `"license": "UNLICENSED"` (+ LICENSE file:
   proprietary, © Heir Labs, all rights reserved), `"private": false` (installable via git dep),
   `type: module`, engines node >= 18.
 - Runtime deps: `zod` (^3.23), `@noble/hashes` (sha256, isomorphic sync), `@noble/curves`

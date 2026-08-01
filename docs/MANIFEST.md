@@ -2,11 +2,11 @@
 
 Every element ships a `manifest.json` conforming to manifest v1. Validation is two-layered:
 
-1. The zod schema (`manifestSchema` from `@heir/element-sdk/manifest`); a generated JSON Schema is committed at `schemas/manifest.v1.json` and re-exported as `manifestJsonSchema`.
+1. The zod schema (`manifestSchema` from `@morbidcorp/element-sdk/manifest`); a generated JSON Schema is committed at `schemas/manifest.v1.json` and re-exported as `manifestJsonSchema`.
 2. Semantic rules applied by `validateManifest` (audience, denylist, processor tier, integrity mode).
 
 ```ts
-import { validateManifest } from '@heir/element-sdk/manifest';
+import { validateManifest } from '@morbidcorp/element-sdk/manifest';
 
 const { ok, errors, warnings } = validateManifest(json, {
   audience: 'third-party',        // or 'first-party'

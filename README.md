@@ -1,4 +1,4 @@
-# @heir/element-sdk
+# @morbidcorp/element-sdk
 
 SDK for building **HEIR Desk Elements** — small third-party apps that run inside the HEIR desk in a hard sandbox. This package provides the element-side bridge client, the manifest schema and validator, CSP generation, integrity/signing helpers, and a development emulator.
 
@@ -45,7 +45,7 @@ Host→element events: `theme-changed`, `visibility-changed`, `resize`.
 ## Quick start
 
 ```ts
-import { connectElement } from '@heir/element-sdk';
+import { connectElement } from '@morbidcorp/element-sdk';
 
 const api = await connectElement();
 const ctx = await api.getContext();
@@ -58,12 +58,12 @@ api.onEvent('theme-changed', ({ theme }) => document.body.dataset.theme = theme)
 
 | Entry point | Contents |
 |---|---|
-| `@heir/element-sdk` | `connectElement`, types, constants |
-| `@heir/element-sdk/protocol` | Wire types + per-method zod schemas (params and results) |
-| `@heir/element-sdk/manifest` | Manifest type, zod schema, `validateManifest`, JSON-Schema re-export |
-| `@heir/element-sdk/integrity` | Canonical JSON, hashing, sign payload, ed25519 sign/verify |
-| `@heir/element-sdk/csp` | `generateElementCsp` |
-| `@heir/element-sdk/emulator` | `EmulatorCore` (environment-agnostic) + `attachIframeHost` |
+| `@morbidcorp/element-sdk` | `connectElement`, types, constants |
+| `@morbidcorp/element-sdk/protocol` | Wire types + per-method zod schemas (params and results) |
+| `@morbidcorp/element-sdk/manifest` | Manifest type, zod schema, `validateManifest`, JSON-Schema re-export |
+| `@morbidcorp/element-sdk/integrity` | Canonical JSON, hashing, sign payload, ed25519 sign/verify |
+| `@morbidcorp/element-sdk/csp` | `generateElementCsp` |
+| `@morbidcorp/element-sdk/emulator` | `EmulatorCore` (environment-agnostic) + `attachIframeHost` |
 
 ## Docs
 

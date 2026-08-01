@@ -7,10 +7,20 @@ This walkthrough takes you from nothing to a validated, packed, signed (dry-run)
 - Node.js >= 18 (`node --version`)
 - npm
 
-## 1. Install the CLI (2 min)
+## 1. Install the CLI (1 min)
 
-Both repos are private until launch, so your git HTTPS auth must have access to
-`heirlabs/elements-cli` and `heirlabs/elements-sdk`.
+```sh
+npm install -g @morbidcorp/elements-cli
+```
+
+Verify:
+
+```sh
+heir-element --version
+```
+
+Working from source instead? Clone and link (your git HTTPS auth needs access
+to the private repos):
 
 ```sh
 git clone https://github.com/heirlabs/elements-cli.git
@@ -20,17 +30,10 @@ npm install -g .
 cd ..
 ```
 
-Verify:
-
-```sh
-heir-element --version
-```
-
-> Why not `npm install -g github:heirlabs/elements-cli`? The CLI depends on the
-> SDK as a second, nested git dependency, and npm prepares nested git
-> dependencies without installing their devDependencies — so the TypeScript
-> `prepare` build fails with `tsc: command not found`. The clone route above
-> installs devDependencies first and works everywhere.
+> Avoid `npm install -g github:heirlabs/elements-cli`: npm prepares nested git
+> dependencies without their devDependencies, so the TypeScript `prepare`
+> build fails with `tsc: command not found`. Use the npm package or the clone
+> route above.
 
 ## 2. Scaffold a new element (2 min)
 
@@ -52,7 +55,7 @@ my-timer/
   .gitignore         # node_modules, .heir, dist
 ```
 
-The scaffold already depends on `@heir/element-sdk` and calls `connectElement()` for you.
+The scaffold already depends on `@morbidcorp/element-sdk` and calls `connectElement()` for you.
 
 ## 3. Run the dev emulator (3 min)
 
@@ -67,7 +70,7 @@ This serves your element in a sandboxed iframe with the same CSP production uses
 Open `src/main.js`. The bridge surface:
 
 ```js
-import { connectElement } from '@heir/element-sdk';
+import { connectElement } from '@morbidcorp/element-sdk';
 
 const api = await connectElement();
 
@@ -136,4 +139,4 @@ with your publisher key, fills `integrity.publisherSig`, re-validates in `submis
 
 - [API.md](API.md) — every method, with examples
 - [MANIFEST.md](MANIFEST.md) — the manifest, field by field
-- The emulator is importable for tests: `@heir/element-sdk/emulator` gives you `EmulatorCore` with in-memory storage in Node.
+- The emulator is importable for tests: `@morbidcorp/element-sdk/emulator` gives you `EmulatorCore` with in-memory storage in Node.

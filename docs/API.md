@@ -5,7 +5,7 @@ All element-side code talks to the desk through the object returned by `connectE
 ## `connectElement(opts?)`
 
 ```ts
-import { connectElement } from '@heir/element-sdk';
+import { connectElement } from '@morbidcorp/element-sdk';
 
 const api = await connectElement();            // default 10 s handshake timeout
 const api = await connectElement({ timeoutMs: 5000 });
@@ -107,11 +107,11 @@ Proxied by the host. The API key never crosses the bridge. Metered elements must
 
 ## Advanced entry points
 
-- `@heir/element-sdk/protocol` — `METHOD_TABLE` (per-method zod schemas for params and results), wire envelope schemas, event schemas, constants.
-- `@heir/element-sdk/emulator` — `EmulatorCore` for Node tests:
+- `@morbidcorp/element-sdk/protocol` — `METHOD_TABLE` (per-method zod schemas for params and results), wire envelope schemas, event schemas, constants.
+- `@morbidcorp/element-sdk/emulator` — `EmulatorCore` for Node tests:
 
 ```ts
-import { EmulatorCore, InMemoryStorage } from '@heir/element-sdk/emulator';
+import { EmulatorCore, InMemoryStorage } from '@morbidcorp/element-sdk/emulator';
 
 const core = new EmulatorCore(manifest, {
   storage: new InMemoryStorage(),
@@ -122,5 +122,5 @@ const core = new EmulatorCore(manifest, {
 const resp = await core.handleRequest({ v: 1, rpcId: 'r1', method: 'storage.get', params: { key: 'k' } });
 ```
 
-- `@heir/element-sdk/csp` — `generateElementCsp(manifest, { frameAncestors? })` produces the exact production CSP for a manifest.
-- `@heir/element-sdk/integrity` — `canonicalJson`, `manifestHash`, `bundleHash`, `buildSignPayload`, `generateKeypair`, `signSubmission`, `verifySubmission`.
+- `@morbidcorp/element-sdk/csp` — `generateElementCsp(manifest, { frameAncestors? })` produces the exact production CSP for a manifest.
+- `@morbidcorp/element-sdk/integrity` — `canonicalJson`, `manifestHash`, `bundleHash`, `buildSignPayload`, `generateKeypair`, `signSubmission`, `verifySubmission`.
