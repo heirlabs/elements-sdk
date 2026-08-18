@@ -1,0 +1,38 @@
+name: Bug report
+description: Something in this SDK does not match the documented protocol.
+title: "bug: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For sandbox escapes, signature bypasses, or reserved-scope leaks, use the [security policy](https://github.com/heirlabs/elements-sdk/blob/main/SECURITY.md) instead of this form.
+  - type: input
+    id: version
+    attributes:
+      label: Package version
+      description: `@morbidcorp/element-sdk` version or commit SHA
+      placeholder: "0.2.0"
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected
+      description: What the SPEC / docs / types say should happen.
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual
+      description: What happened, including error codes (`E_*`) and a minimal snippet.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction
+      description: Smallest code or `heir-element` command sequence that shows the bug.
+    validations:
+      required: true

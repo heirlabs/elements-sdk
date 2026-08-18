@@ -8,6 +8,22 @@
   "engines": {
     "node": ">=18"
   },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "homepage": "https://github.com/heirlabs/elements-sdk#readme",
+  "bugs": {
+    "url": "https://github.com/heirlabs/elements-sdk/issues"
+  },
+  "keywords": [
+    "heir",
+    "desk",
+    "elements",
+    "sandbox",
+    "iframe",
+    "manifest",
+    "csp",
+    "ed25519"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/heirlabs/elements-sdk.git"
@@ -16,7 +32,9 @@
     "dist",
     "schemas",
     "docs",
+    "examples",
     "README.md",
+    "CHANGELOG.md",
     "LICENSE"
   ],
   "exports": {
