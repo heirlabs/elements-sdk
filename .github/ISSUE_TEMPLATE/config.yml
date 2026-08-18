@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Security report
+    url: https://github.com/heirlabs/elements-sdk/security/advisories/new
+    about: Sandbox escapes, signature bypasses, reserved-scope leaks — do not file these as public issues.
+  - name: CLI issues
+    url: https://www.npmjs.com/package/@morbidcorp/elements-cli
+    about: heir-element CLI lives in a separate package. Install it from npm; do not file CLI bugs against this SDK unless they reproduce in the library itself.

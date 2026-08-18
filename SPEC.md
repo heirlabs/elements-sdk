@@ -4,18 +4,21 @@ Contract source: HEIR Desk Elements v3 Marketplace Plan (2026-08-01), §3.2 (bri
 list), §3.3 (manifest), §3.5/3.6 (integrity/signing), amendments A5–A14, Appendix B #13.
 This spec is the implementation contract. Deviate only with a written note in the PR/commit body.
 
-Status framing (claims-gating, plan §7.8): this is pre-v3.0 platform work. Nothing here may be
-described publicly as an existing HEIR feature. Repo stays private until the operator flips it.
+Status framing (as of 2026-08-18): this repository is public and the package is
+published as `@morbidcorp/element-sdk` 0.2.0. This SPEC remains the implementation
+contract. The desk marketplace / third-party install surface ships independently
+of this package and must not be described as a live public store.
 
 ## Package
 
 - name: `@morbidcorp/element-sdk`, version `0.2.0`, `"license": "UNLICENSED"` (+ LICENSE file:
-  proprietary, © Heir Labs, all rights reserved), `"private": false` (installable via git dep),
-  `type: module`, engines node >= 18.
+  proprietary, © Heir Labs, all rights reserved), `"private": false` (published to npm; git
+  dep still works), `type: module`, engines node >= 18.
 - Runtime deps: `zod` (^3.23), `@noble/hashes` (sha256, isomorphic sync), `@noble/curves`
   (ed25519, isomorphic). Nothing else. Dev deps: typescript, vitest, zod-to-json-schema.
 - Build: `tsc` (strict, NodeNext ESM) → `dist/` (JS + .d.ts). `"prepare": "npm run build"` is
-  REQUIRED so `github:heirlabs/elements-sdk` git-dependency installs work before npm publish.
+  REQUIRED so `github:heirlabs/elements-sdk` git-dependency installs still work; prefer the
+  published npm package (`@morbidcorp/element-sdk`) for consumers.
 - `dist/` gitignored; `schemas/manifest.v1.json` is generated at build (`npm run gen:schema`)
   and COMMITTED, with a vitest drift test (regenerate in-memory, deep-equal against the file).
 - Exports map:

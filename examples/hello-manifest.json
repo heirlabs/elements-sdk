@@ -1,0 +1,20 @@
+{
+  "manifestVersion": 1,
+  "id": "com.example.pomodoro",
+  "name": "Pomodoro Timer",
+  "version": "1.0.0",
+  "description": "A minimalist focus timer for your desk.",
+  "publisher": { "id": "pub_1a2b3c", "displayName": "Example Labs", "tier": 1 },
+  "category": "utilities",
+  "surfaces": ["window"],
+  "window": { "defaultSize": [400, 600], "minSize": [320, 400], "resizable": true },
+  "runtime": { "type": "sandboxed-iframe", "api": "heir-element-api@1" },
+  "entry": "index.html",
+  "permissions": ["storage.element"],
+  "endpoints": [],
+  "dataUse": { "collectsPersonalData": false, "sells": false, "retention": "none" },
+  "pricing": { "model": "free" },
+  "compat": { "minDeskVersion": "3.0.0" },
+  "ageRating": "everyone",
+  "support": { "email": "support@example.com" }
+}

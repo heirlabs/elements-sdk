@@ -19,21 +19,10 @@ Verify:
 heir-element --version
 ```
 
-Working from source instead? Clone and link (your git HTTPS auth needs access
-to the private repos):
-
-```sh
-git clone https://github.com/heirlabs/elements-cli.git
-cd elements-cli
-npm install
-npm install -g .
-cd ..
-```
-
-> Avoid `npm install -g github:heirlabs/elements-cli`: npm prepares nested git
-> dependencies without their devDependencies, so the TypeScript `prepare`
-> build fails with `tsc: command not found`. Use the npm package or the clone
-> route above.
+The CLI source repo is separate from this SDK. Prefer the npm package above.
+Avoid `npm install -g github:heirlabs/elements-cli`: npm prepares nested git
+dependencies without their devDependencies, so the TypeScript `prepare` build
+fails with `tsc: command not found`.
 
 ## 2. Scaffold a new element (2 min)
 
